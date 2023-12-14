@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 
 const apiId = 14878688;
 const mongoUrl =
-  "mongodb+srv://app:7U32UhLEwpdyOlsD@dataextraction.b64ff.mongodb.net/";
+  "mongodb+srv://app:7U32UhLEwpdyOlsD@dataextraction.b64ff.mongodb.net/?retryWrites=true&w=majority";
 const apiHash = "7e9e17c602314d95ec633b04e9ac58c0";
 const session = new StringSession(
   `1BQANOTEuMTA4LjU2LjEyOAG7HJeh39/Ix8/a2ekckIBJTv/2JAUhi1u6GUPwcEpq7A0a57lcvANfjOFLUFjdsmso4rWu7E+zrIVbtZ9DWWrSJ55XTFtdmFitkaewYKZXiSU+ke5Tr4QmEUgTw5byVtZ2VtmHsCix+fiCSg6wz3VNtzd7DFGGuNgrvteGxCo2Uiy1x1YyfC/7MVVVrZ0JF4LiULpQtHBC+1iwu+gkPDmR1D8Mh7p83ZOesNugN5oFRJNhfQbwHCMNffTjzayXcIqa+tluNIwBuyeghw1Gcq5GX0yf0ZQQDCArP1xUXrC4eEQ8CU4zutYAQos0CMXTOMZNJOcbqIsRxwi7dlYHhvqy4Q==`
