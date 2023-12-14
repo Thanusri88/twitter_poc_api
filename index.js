@@ -9,7 +9,14 @@ const { StringSession } = require("telegram/sessions");
 const infCtrl = require("./controllers/influencer");
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+  const allowedOrigins = [
+    "http://localhost:8080",
+    "https://twitter-pco-ui.vercel.app",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, Content-Type, X-Auth-Token"
@@ -64,12 +71,27 @@ app.get("/api/telegram", async (req, res) => {
       acc = [...acc, ...temp];
       return acc;
     }, []);
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+
+    const allowedOrigins = [
+      "http://localhost:8080",
+      "https://twitter-pco-ui.vercel.app",
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.json(merged);
     await client.disconnect();
   } catch (e) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+    const allowedOrigins = [
+      "http://localhost:8080",
+      "https://twitter-pco-ui.vercel.app",
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.json(e);
   }
@@ -86,7 +108,14 @@ app.get("/api/yt", (req, res) => {
       `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=50&key=AIzaSyCA3rw4r3S1jN8VbDIg6EIglxgfeXOHJVM&channelId=${channelId}&q=${keyword}`
     )
     .then((response) => {
-      res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+      const allowedOrigins = [
+        "http://localhost:8080",
+        "https://twitter-pco-ui.vercel.app",
+      ];
+      const origin = req.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+      }
       res.header("Access-Control-Allow-Headers", "X-Requested-With");
       const data = response.data.items.filter((i) =>
         i.snippet.title.toLowerCase().includes(keyword.toLowerCase())
@@ -168,11 +197,25 @@ app.get("/api/twitter", (req, res) => {
           temp.author_username = matchedUser.username;
           return temp;
         });
-        res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+        const allowedOrigins = [
+          "http://localhost:8080",
+          "https://twitter-pco-ui.vercel.app",
+        ];
+        const origin = req.headers.origin;
+        if (allowedOrigins.includes(origin)) {
+          res.setHeader("Access-Control-Allow-Origin", origin);
+        }
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.json(result);
       } else {
-        res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+        const allowedOrigins = [
+          "http://localhost:8080",
+          "https://twitter-pco-ui.vercel.app",
+        ];
+        const origin = req.headers.origin;
+        if (allowedOrigins.includes(origin)) {
+          res.setHeader("Access-Control-Allow-Origin", origin);
+        }
         res.header("Access-Control-Allow-Headers", "X-Requested-With");
         res.json([]);
       }

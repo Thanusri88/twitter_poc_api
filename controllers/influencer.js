@@ -1,50 +1,57 @@
-const Influencer = require('../models/Influencer');
-const axios = require('axios');
+const Influencer = require("../models/Influencer");
+const axios = require("axios");
 
 exports.validateInfluencer = async (req, res) => {};
 
 exports.addInfluencer = async (req, res) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-  let twitterId = req.body.twitterId.replaceAll('twitter', '');
-  twitterId = twitterId.replaceAll('@', '');
-  twitterId = twitterId.replaceAll('/', '');
-  twitterId = twitterId.replaceAll('.', '');
-  twitterId = twitterId.replaceAll('https:', '');
-  twitterId = twitterId.replaceAll('com', '');
-  twitterId = twitterId.replaceAll('www', '');
-  twitterId = twitterId.replaceAll('http:', '');
-  let igId = req.body.igId.replaceAll('instagram', '');
-  twitterId = twitterId.replaceAll('@', '');
-  igId = igId.replaceAll('/', '');
-  igId = igId.replaceAll('.', '');
-  igId = igId.replaceAll('https:', '');
-  igId = igId.replaceAll('com', '');
-  igId = igId.replaceAll('www', '');
-  igId = igId.replaceAll('http:', '');
-  let ytChannelId = '';
-  let ytChannelName = '';
+  const allowedOrigins = [
+    "http://localhost:8080",
+    "https://twitter-pco-ui.vercel.app",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  let twitterId = req.body.twitterId.replaceAll("twitter", "");
+  twitterId = twitterId.replaceAll("@", "");
+  twitterId = twitterId.replaceAll("/", "");
+  twitterId = twitterId.replaceAll(".", "");
+  twitterId = twitterId.replaceAll("https:", "");
+  twitterId = twitterId.replaceAll("com", "");
+  twitterId = twitterId.replaceAll("www", "");
+  twitterId = twitterId.replaceAll("http:", "");
+  let igId = req.body.igId.replaceAll("instagram", "");
+  twitterId = twitterId.replaceAll("@", "");
+  igId = igId.replaceAll("/", "");
+  igId = igId.replaceAll(".", "");
+  igId = igId.replaceAll("https:", "");
+  igId = igId.replaceAll("com", "");
+  igId = igId.replaceAll("www", "");
+  igId = igId.replaceAll("http:", "");
+  let ytChannelId = "";
+  let ytChannelName = "";
   let errorMessages = [];
   let ytId = req.body.ytId;
   if (ytId) {
     try {
       if (!/^https?:\/\//i.test(ytId)) {
-        ytId = 'https://' + ytId;
+        ytId = "https://" + ytId;
       }
       const response = await axios.request({
-        method: 'GET',
-        url: req.body.ytId.split('.com/')[1],
-        baseURL: 'https://www.youtube.com',
+        method: "GET",
+        url: req.body.ytId.split(".com/")[1],
+        baseURL: "https://www.youtube.com",
       });
-      const mix = response.data.indexOf('externalId');
-      const twitter = response.data.indexOf('twitter:title');
+      const mix = response.data.indexOf("externalId");
+      const twitter = response.data.indexOf("twitter:title");
       ytChannelId = response.data.slice(mix, mix + 50).split('"')[2];
       ytChannelName = response.data.slice(twitter, twitter + 50).split('"')[2];
       if (!ytChannelId || !ytChannelName) {
-        errorMessages.push('yt');
+        errorMessages.push("yt");
       }
     } catch (e) {
-      errorMessages.push('yt');
+      errorMessages.push("yt");
     }
   }
 
@@ -52,16 +59,16 @@ exports.addInfluencer = async (req, res) => {
     try {
       const resp = await axios.get(`https://www.instagram.com/${igId}/?__a=1`, {
         headers: {
-          Cookie: 'sessionid=53522211638%3AmEy1prLbdJa6cX%3A13',
+          Cookie: "sessionid=53522211638%3AmEy1prLbdJa6cX%3A13",
         },
       });
       const response = resp.data;
-      const data = response['graphql']['user']['username'];
+      const data = response["graphql"]["user"]["username"];
       if (igId !== data) {
-        errorMessages.push('ig');
+        errorMessages.push("ig");
       }
     } catch (e) {
-      errorMessages.push('ig');
+      errorMessages.push("ig");
     }
   }
 
@@ -72,18 +79,18 @@ exports.addInfluencer = async (req, res) => {
         {
           headers: {
             Authorization:
-              'Bearer AAAAAAAAAAAAAAAAAAAAACOAbgEAAAAAbar10KGJjZrma3MX49gnPxLn0y8%3DavhxgA4N6KHwkHYxpXlAo6EgvMMdKFywRIWaQPccbEzqDCOWbE',
+              "Bearer AAAAAAAAAAAAAAAAAAAAACOAbgEAAAAAbar10KGJjZrma3MX49gnPxLn0y8%3DavhxgA4N6KHwkHYxpXlAo6EgvMMdKFywRIWaQPccbEzqDCOWbE",
           },
         }
       );
       const response = resp.data.data[0];
       if (twitterId.toLowerCase() !== response.username.toLowerCase()) {
-        console.log('Twitter error: ' + console.log(JSON.stringify(resp.data)));
-        errorMessages.push('twitter');
+        console.log("Twitter error: " + console.log(JSON.stringify(resp.data)));
+        errorMessages.push("twitter");
       }
     } catch (e) {
       console.log(e);
-      errorMessages.push('twitter');
+      errorMessages.push("twitter");
     }
   }
 
@@ -113,51 +120,51 @@ exports.addInfluencer = async (req, res) => {
     }
     res.status(200).json({
       error: false,
-      message: 'DB save operation success',
+      message: "DB save operation success",
     });
   });
 };
 
 exports.edit = async (req, res) => {
-  let twitterId = req.body.twitterId.replaceAll('twitter', '');
-  twitterId = twitterId.replaceAll('@', '');
-  twitterId = twitterId.replaceAll('/', '');
-  twitterId = twitterId.replaceAll('.', '');
-  twitterId = twitterId.replaceAll('https:', '');
-  twitterId = twitterId.replaceAll('com', '');
-  twitterId = twitterId.replaceAll('www', '');
-  twitterId = twitterId.replaceAll('http:', '');
-  let igId = req.body.igId.replaceAll('instagram', '');
-  twitterId = twitterId.replaceAll('@', '');
-  igId = igId.replaceAll('/', '');
-  igId = igId.replaceAll('.', '');
-  igId = igId.replaceAll('https:', '');
-  igId = igId.replaceAll('com', '');
-  igId = igId.replaceAll('www', '');
-  igId = igId.replaceAll('http:', '');
-  let ytChannelId = '';
-  let ytChannelName = '';
+  let twitterId = req.body.twitterId.replaceAll("twitter", "");
+  twitterId = twitterId.replaceAll("@", "");
+  twitterId = twitterId.replaceAll("/", "");
+  twitterId = twitterId.replaceAll(".", "");
+  twitterId = twitterId.replaceAll("https:", "");
+  twitterId = twitterId.replaceAll("com", "");
+  twitterId = twitterId.replaceAll("www", "");
+  twitterId = twitterId.replaceAll("http:", "");
+  let igId = req.body.igId.replaceAll("instagram", "");
+  twitterId = twitterId.replaceAll("@", "");
+  igId = igId.replaceAll("/", "");
+  igId = igId.replaceAll(".", "");
+  igId = igId.replaceAll("https:", "");
+  igId = igId.replaceAll("com", "");
+  igId = igId.replaceAll("www", "");
+  igId = igId.replaceAll("http:", "");
+  let ytChannelId = "";
+  let ytChannelName = "";
   let errorMessages = [];
   let ytId = req.body.ytId;
   if (ytId) {
     try {
       if (!/^https?:\/\//i.test(ytId)) {
-        ytId = 'https://' + ytId;
+        ytId = "https://" + ytId;
       }
       const response = await axios.request({
-        method: 'GET',
-        url: req.body.ytId.split('.com/')[1],
-        baseURL: 'https://www.youtube.com',
+        method: "GET",
+        url: req.body.ytId.split(".com/")[1],
+        baseURL: "https://www.youtube.com",
       });
-      const mix = response.data.indexOf('externalId');
-      const twitter = response.data.indexOf('twitter:title');
+      const mix = response.data.indexOf("externalId");
+      const twitter = response.data.indexOf("twitter:title");
       ytChannelId = response.data.slice(mix, mix + 50).split('"')[2];
       ytChannelName = response.data.slice(twitter, twitter + 50).split('"')[2];
       if (!ytChannelId || !ytChannelName) {
-        errorMessages.push('yt');
+        errorMessages.push("yt");
       }
     } catch (e) {
-      errorMessages.push('yt');
+      errorMessages.push("yt");
     }
   }
 
@@ -165,16 +172,16 @@ exports.edit = async (req, res) => {
     try {
       const resp = await axios.get(`https://www.instagram.com/${igId}/?__a=1`, {
         headers: {
-          Cookie: 'sessionid=53522211638%3AmEy1prLbdJa6cX%3A13',
+          Cookie: "sessionid=53522211638%3AmEy1prLbdJa6cX%3A13",
         },
       });
       const response = resp.data;
-      const data = response['graphql']['user']['username'];
+      const data = response["graphql"]["user"]["username"];
       if (igId !== data) {
-        errorMessages.push('ig');
+        errorMessages.push("ig");
       }
     } catch (e) {
-      errorMessages.push('ig');
+      errorMessages.push("ig");
     }
   }
 
@@ -185,16 +192,16 @@ exports.edit = async (req, res) => {
         {
           headers: {
             Authorization:
-              'Bearer AAAAAAAAAAAAAAAAAAAAACOAbgEAAAAAbar10KGJjZrma3MX49gnPxLn0y8%3DavhxgA4N6KHwkHYxpXlAo6EgvMMdKFywRIWaQPccbEzqDCOWbE',
+              "Bearer AAAAAAAAAAAAAAAAAAAAACOAbgEAAAAAbar10KGJjZrma3MX49gnPxLn0y8%3DavhxgA4N6KHwkHYxpXlAo6EgvMMdKFywRIWaQPccbEzqDCOWbE",
           },
         }
       );
       const response = resp.data.data;
       if (twitterId !== response.username) {
-        errorMessages.push('twitter');
+        errorMessages.push("twitter");
       }
     } catch (e) {
-      errorMessages.push('twitter');
+      errorMessages.push("twitter");
     }
   }
 
@@ -223,7 +230,7 @@ exports.edit = async (req, res) => {
     .then(() => {
       res.status(200).json({
         error: false,
-        message: 'DB edit operation success',
+        message: "DB edit operation success",
       });
     })
     .catch((error) => {
@@ -239,7 +246,7 @@ exports.delete = (req, res) => {
     .then(() => {
       res.status(200).json({
         error: false,
-        message: 'DB delete operation success',
+        message: "DB delete operation success",
       });
     })
     .catch((error) => {
@@ -255,7 +262,7 @@ exports.getById = (req, res) => {
     .then((data) => {
       res.status(200).json({
         error: false,
-        message: 'DB get operation success',
+        message: "DB get operation success",
         payload: data,
       });
     })
@@ -272,7 +279,7 @@ exports.getAll = (req, res) => {
     .then((data) => {
       res.status(200).json({
         error: false,
-        message: 'DB get operation success',
+        message: "DB get operation success",
         payload: data,
       });
     })
